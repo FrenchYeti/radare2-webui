@@ -1,15 +1,30 @@
 /** Ruler component for splitted layout */
 export class Ruler {
 
-	get position() { return this._position; }
+	private _position: number = null;
+	private listeners: any;
+	private containerNode: HTMLElement;
+	private rulerNode: HTMLElement;
+	private moving: boolean;
+
+
+	get position() {
+		return this._position;
+	}
+
 	set position(value) {
 		this._position = value;
 		this.triggerListeners();
 	}
 
-	constructor(containerNode, rulerNode) {
-		this.containerNode = containerNode;
-		this.rulerNode = rulerNode;
+	/**
+	 *
+	 * @param containerNode
+	 * @param rulerNode
+	 */
+	constructor(pContainerNode:HTMLElement, pRulerNode:HTMLElement) {
+		this.containerNode = pContainerNode;
+		this.rulerNode = pRulerNode;
 
 		this.listeners = [];
 		this.moving = false;
@@ -21,8 +36,12 @@ export class Ruler {
 		this.addListeners((position) => this.move(position));
 	}
 
-	/** Add events listeners on the node */
-	init() {
+	/**
+	 * Add events listeners on the node
+	 *
+	 * @method
+	 * */
+	init():void {
 		const doDrag = (e) => {
 			e.preventDefault();
 			const containerBoundingBox = this.containerNode.getBoundingClientRect();
@@ -45,13 +64,18 @@ export class Ruler {
 		this.listeners.forEach(l => l(this.position));
 	}
 
-	addListeners(fn) {
-		this.listeners.push(fn);
+	/**
+	 * To add a listener
+	 *
+	 * @param pFunc {}
+	 */
+	addListeners(pFunc:Function):void {
+		this.listeners.push(pFunc);
 	}
 
 	/** Move the ruler between [0;1] */
-	move(position) {
-		this.rulerNode.style.marginLeft = (position) * 100 + '%';
+	move(pPosition:number):void {
+		this.rulerNode.style.marginLeft = (pPosition) * 100 + '%';
 	}
 
 	/** Place the ruler in the middle (doesn't change display mode) */
@@ -60,10 +84,16 @@ export class Ruler {
 		this.move(0.5);
 	}
 
+	/**
+	 * To show the element
+	 */
 	show() {
 		this.rulerNode.style.display = 'block';
 	}
 
+	/**
+	 * To hide the element
+	 */
 	hide() {
 		this.rulerNode.style.display = 'none';
 	}
