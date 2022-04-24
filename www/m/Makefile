@@ -9,12 +9,13 @@ all: build
 	$(MAKE) dist
 
 build: node_modules
+	tsc
 
 dist release: node_modules
 	mkdir -p ../../dist/m
 	cp -f index.html ../../dist/m/index.html
 	cp -rf css ../../dist/m
-	$(shell npm bin)/webpack-cli -o $$PWD/www/ $$PWD/js/app.js
+	$(shell npm bin)/webpack-cli -o $$PWD/www/ $$PWD/out-tsc/js/app.js
 	$(shell npm bin)/gulp release
 	cp $$PWD/www/* ../../dist/m/.
 	rm -f $(DISTZIP)
