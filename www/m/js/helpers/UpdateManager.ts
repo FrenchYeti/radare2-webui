@@ -1,5 +1,8 @@
 export class UpdateManager {
 
+	updateMethods:any[];
+	currentFocus:number;
+
 	constructor() {
 		this.updateMethods = [{}, {}];
 		this.currentFocus;

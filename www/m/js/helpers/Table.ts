@@ -1,4 +1,5 @@
 import {applySeek} from '../helpers/Format';
+import $ from "jquery"
 
 /**
  * Handling DataTables with jQuery plugin
@@ -8,24 +9,39 @@ import {applySeek} from '../helpers/Format';
  * @param {String} id - Id (DOM) of the current table, internal usage for DataTable plugin
  */
 export class Table {
-	constructor(cols, nonum, id, onChange, seekNavigation = null) {
-		this.cols = cols;
-		this.nonum = nonum;
-		this.clickableOffset = new Array(cols.length);
+
+	cols:string[];
+	nonum:boolean[];
+	clickableOffset:boolean[];
+	contentEditable: boolean[];
+	onChange:any;
+	seekNavigation:any;
+	id:string;
+
+	private root:HTMLTableElement;
+	private thead:HTMLTableSectionElement;
+	private tbody:HTMLTableSectionElement;
+
+	constructor(pColConfig:string[], pNoNumeric:boolean[], pID:string, onChange = null, seekNavigation = null) {
+		this.cols = pColConfig;
+		this.nonum = pNoNumeric;
+		this.clickableOffset = new Array(pColConfig.length);
 		this.clickableOffset.fill(false);
-		this.contentEditable = new Array(cols.length);
+		this.contentEditable = new Array(pColConfig.length);
 		this.contentEditable.fill(false);
 		this.onChange = onChange;
 		this.seekNavigation = seekNavigation;
-		this.id = id || false;
+		this.id = pID;
 
 		this.init();
 	}
 
-	init() {
+	init():void {
 		this.root = document.createElement('table');
 		this.root.className = 'mdl-data-table mdl-data-table--selectable mdl-shadow--2dp';
-		if (this.root.id !== false) {
+
+		// TODO !== false
+		if (this.root.id !== this.id) {
 			this.root.id = this.id;
 		}
 
@@ -34,10 +50,10 @@ export class Table {
 		this.tbody = document.createElement('tbody');
 		this.root.appendChild(this.tbody);
 
-		var tr = document.createElement('tr');
+		const tr:HTMLTableRowElement = document.createElement('tr');
 		this.thead.appendChild(tr);
 
-		for (var c in this.cols) {
+		for (const c in this.cols) {
 			if (this.cols[c][0] == '+') {
 				this.clickableOffset[c] = true;
 				this.cols[c] = this.cols[c].substr(1);
@@ -45,7 +61,7 @@ export class Table {
 				this.contentEditable[c] = true;
 			}
 
-			var th = document.createElement('th');
+			const th:HTMLTableCellElement = document.createElement('th');
 			th.appendChild(document.createTextNode(this.cols[c]));
 			if (this.nonum[c]) {
 				th.className = 'mdl-data-table__cell--non-numeric';
@@ -54,21 +70,21 @@ export class Table {
 		}
 	}
 
-	getRows() {
-		return Array.prototype.slice.call(this.tbody.children);
+	getRows():any[] {
+		return Array.prototype.slice.call(this.tbody.children); // TODO : slice useless ?
 	}
 
-	addRow(cells) {
-		var tr = document.createElement('tr');
+	addRow(cells):HTMLTableRowElement {
+		const tr:HTMLTableRowElement = document.createElement('tr');
 		this.tbody.appendChild(tr);
 
-		for (var i = 0; i < cells.length; i++) {
-			var td = document.createElement('td');
+		for (let i = 0; i < cells.length; i++) {
+			const td:any = document.createElement('td');
 			if (this.clickableOffset[i]) {
 				const a = document.createElement('a');
 				a.innerHTML = cells[i];
 				td.appendChild(a);
-				applySeek(a, cells[i], this.seekNavigation);				
+				applySeek(a, cells[i], this.seekNavigation);
 			} else if (typeof cells[i] === 'object') {
 				td.appendChild(cells[i]);
 			} else {
@@ -76,7 +92,7 @@ export class Table {
 			}
 
 			if (this.contentEditable[i]) {
-				var _this = this;
+				const _this:Table = this;
 				td.initVal = td.innerHTML;
 				td.contentEditable = true;
 				td.busy = false;
@@ -115,10 +131,10 @@ export class Table {
 		return tr;
 	}
 
-	insertInto(node) {
-		node.appendChild(this.root);
-		if (this.id !== false) {
-			$('#' + this.id).DataTable();
+	insertInto(pNode:HTMLElement) {
+		pNode.appendChild(this.root);
+		if (this.id !== null) {
+			($('#' + this.id) as any).DataTable();
 		}
 	}
 }
