@@ -1,6 +1,21 @@
 /* radare2 Copyleft 2013-2022 pancake & frenchyeti */
 
 
+export interface R2Setting {
+	name:string;
+	defVal:string|boolean|number;
+	apply: any;
+}
+
+export interface R2Configuration {
+	[settingName:string] :R2Setting
+}
+
+export interface Chunk {
+	data: any;
+	prev?: Chunk;
+	next?: Chunk;
+}
 /**
  *
  * Not exported, internal use only
@@ -50,7 +65,7 @@ enum R2SyncMode {
 	SASYNC= 'sasync',
 	FAKE= 'fake',
 }
-export default class r2 {
+export class r2 {
 	static backward:boolean = false;
 	static next_curoff:number = 0;
 	static next_lastoff:number = 0;
@@ -78,6 +93,8 @@ export default class r2 {
 	static sections:any = {};
 	static settings:any = {};
 	static flags:any = {};
+
+	static inColor:any = null;
 
 	plugin():void {
 		try {
@@ -472,7 +489,7 @@ export default class r2 {
 		}
 	}
 
-	static cmd(pCommand:string, pSuccessCallback:any, pErrCallback:any = null):void {
+	static cmd(pCommand:string, pSuccessCallback:any = ()=>{}, pErrCallback:any = null):void {
 		if (Array.isArray(pCommand)) {
 			let res:any = [];
 			let idx:number = 0;
@@ -690,6 +707,10 @@ export default class r2 {
 		return pStr;
 	};
 
+
+	static disableUtf8(){
+		r2.cmd('e scr.utf8=false');
+	}
 
 };
 
