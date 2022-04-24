@@ -6,16 +6,29 @@
  */
 export class BaseWidget {
 
+	protected _rootNode: HTMLElement;
+	protected _node: HTMLElement;
+	protected name: string;
+	protected classNames: string[];
+	protected focused: boolean;
+	displayed: boolean;
+	protected inColor:boolean = false;
+
+
 	/** Node provided by UIContext to draw content */
-	get rootNode() { return this._rootNode; }
+	get rootNode():HTMLElement { return this._rootNode; }
 
 	/** Node provided by the Widget to draw content */
-	get node() { return this._node; }
+	get node():HTMLElement { return this._node; }
 
-	/** Pass the widgetContainer instance with name of the widget */
-	constructor(name, ...classNames) {
-		this.name = name;
-		this.classNames = classNames;
+	/**
+	 * Pass the widgetContainer instance with name of the widget
+	 *
+	 * @constructor
+	 * */
+	constructor(pName:string, ...pClassNames:string[]) {
+		this.name = pName;
+		this.classNames = pClassNames;
 		this.classNames.push('rwidget');
 		this.init();
 
@@ -23,13 +36,17 @@ export class BaseWidget {
 		this.displayed = false;
 	}
 
-	/** Init the module used inside component, called once */
-	init() { }
+	/**
+	 * Init the module used inside component, called once
+	 *
+	 * @method
+	 * */
+	init():void { }
 
 	/** Define what should be done to render the Widget */
-	drawWidget(destinationNode, ...args) {
-		this._node = destinationNode;
-		this._rootNode = destinationNode;
+	drawWidget(pDestinationNode:HTMLElement, ...pDrawArgs:any[]) {
+		this._node = pDestinationNode;
+		this._rootNode = pDestinationNode;
 		this._rootNode.focus();
 
 		// Set state
@@ -44,11 +61,11 @@ export class BaseWidget {
 		this.classNames.forEach(className => this._rootNode.classList.add(className));
 
 		// Insert content
-		this.draw(...args);
+		this.draw(...pDrawArgs);
 	}
 
 	/** Method to insert content to Widget.node */
-	draw(...args) { }
+	draw(...pDrawArgs:any[]) { }
 
 	/** When focus is gained */
 	gotFocus() {

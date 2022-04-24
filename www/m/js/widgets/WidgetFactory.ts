@@ -19,8 +19,14 @@ import {DisassemblyFunctionsWidget} from './DisassemblyFunctionsWidget';
 import {DisassemblyFunctionsFullWidget} from './DisassemblyFunctionsFullWidget';
 import {DisassemblyBlocksWidget} from './DisassemblyBlocksWidget';
 import {DisassemblyDecompileWidget} from './DisassemblyDecompileWidget';
+import {BaseWidget} from "./BaseWidget";
 
+
+export interface WidgetHashMap {
+	[widgetName:string] :BaseWidget;
+}
 export class WidgetFactory {
+	private widgets: {};
 
 	constructor() {
 		this.widgets = {};
