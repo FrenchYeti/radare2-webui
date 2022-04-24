@@ -1,5 +1,8 @@
 import {SettingsManager} from './SettingsManager';
 import {uiContext} from './UIContext';
+import {R2Configuration, r2} from "../../../lib/r2";
+import {BaseWidget} from "../widgets/BaseWidget";
+
 
 /**
  * Group of actions to listen to some events (seek, analyze...)
@@ -11,6 +14,12 @@ export const R2Actions = {
 
 class R2Wrapper {
 
+	listeners:any[];
+
+	/**
+	 *
+	 *
+	 */
 	constructor() {
 		this.listeners = [];
 
@@ -26,22 +35,30 @@ class R2Wrapper {
 	 * @param {any} value The value to seek
 	 * @param {any} [widget=null] Optional widget for navigation
 	 */
-	seek(value, widget = null) {
+	seek(pValue:any, pWidget:BaseWidget = null) {
 		// TODO fetch s++ / s-- cmd
 		// TODO keep track of current offset
-		let addr = value;
-		if (typeof value === 'undefined') {
-			addr = prompt('address');
-		} else if (typeof value === 'number') {
-			addr = '0x' + value.toString(16);
+		let addr:string;
+		if (typeof pValue === 'undefined') {
+			// @ts-ignore window exists
+			addr = window.prompt('address');
+		} else if (typeof pValue === 'number') {
+			addr = '0x' + pValue.toString(16);
+		} else if (typeof pValue === 'string'){
+			addr = pValue;
+		} else{
+			// error to catch => bug
+			console.error("[ERROR] R2Wrapper.seek() : not a string : ",pValue);
+			addr = (pValue as string);
 		}
 
 		if (!addr || addr.trim() === '') {
 			return;
 		}
 
+		// TODO : replace by r2 api
 		r2.cmd('s ' + addr, () => {
-			widget && uiContext.navigateTo(widget);
+			pWidget && uiContext.navigateTo(pWidget);
 			this.notifyAction(R2Actions.SEEK);
 		});
 	}
@@ -66,6 +83,7 @@ class R2Wrapper {
 
 export const r2Wrapper = new R2Wrapper();
 
+// TODO enum
 const SettingItems = {
 	PLATFORM: 'platform',
 	BITS: 'bits',
@@ -89,7 +107,8 @@ const SettingItems = {
 
 
 
-let r2Conf = {};
+// TODO : replace by r2 api
+let r2Conf:R2Configuration = {};
 r2Conf[SettingItems.PLATFORM] = { name: 'platform', defVal: 'x86', apply: function(p) { r2.cmd('e asm.arch=' + p); } };
 r2Conf[SettingItems.BITS] = { name: 'bits', defVal: '32', apply: function(p) { r2.cmd('e asm.bits=' + p); } };
 r2Conf[SettingItems.UTF8] = { name: 'utf8', defVal: 'true', apply: function(p) { r2.cmd('e scr.utf8=' + p); } };
@@ -159,7 +178,7 @@ r2Conf[SettingItems.MODE] = { name: 'mode', defVal: 'PA', apply: function(p) {
 r2Conf[SettingItems.ANAL_HAS_NEXT] = { name: 'analHasNext', defVal: true, apply: function(p) { console.log('analHasNext is ' + p); } };
 r2Conf[SettingItems.ANAL_SKIP_NOPS] = { name: 'analSkipNops', defVal: true, apply: function(p) { console.log('analSkipNops is ' + p); } };
 r2Conf[SettingItems.ANAL_NON_CODE] = { name: 'analNonCode', defVal: false, apply: function(p) { console.log('analNonCode is ' + p); } };
-r2Conf[SettingItems.COLORS] = { name: 'colors', defVal: 3, apply: function(p) { inColor = p; r2.cmd('e scr.color=' + p);} };
+r2Conf[SettingItems.COLORS] = { name: 'colors', defVal: 3, apply: function(p) { r2.inColor = p; r2.cmd('e scr.color=' + p);} };
 r2Conf[SettingItems.THEME] = { name: 'theme', defVal: 'none', apply: function(p) { r2.cmd('eco ' + p); } }; // TODO
 r2Conf[SettingItems.USE_TTS] = { name: 'tts', defVal: true, apply: () => { } }; // TODO: not a r2Lib conf, should be externalized in an UI settings set
 

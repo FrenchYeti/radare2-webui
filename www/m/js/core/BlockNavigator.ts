@@ -1,7 +1,13 @@
 import {ChunkStatus} from './ChunkStatus';
 import {NavigatorDirection} from './NavigatorDirection';
+import {Chunk} from "../../../lib/r2";
 
 export class BlockNavigator {
+
+	providerWorker:any = null;
+	curChunk:Chunk = undefined;
+	gap:number = -1;
+	currentOffset:number = -1;
 
 	constructor() { }
 
@@ -15,7 +21,7 @@ export class BlockNavigator {
 	}
 
 	configureWorker_() {
-		var _this = this;
+		const _this = this;
 		this.providerWorker.onmessage = function(e) {
 			if (e.data.dir === NavigatorDirection.CURRENT) {
 				if (typeof _this.curChunk.data.callback !== 'undefined') {
@@ -26,9 +32,9 @@ export class BlockNavigator {
 				_this.curChunk.data = e.data;
 				_this.curChunk.data.status = ChunkStatus.COMPLETED;
 			} else {
-				var dir = (e.data.dir === NavigatorDirection.BEFORE) ? 'prev' : 'next';
+				const dir:string = (e.data.dir === NavigatorDirection.BEFORE) ? 'prev' : 'next';
 
-				var item = _this.curChunk;
+				let item:any = _this.curChunk;
 				while (typeof item[dir] !== 'undefined') {
 					item = item[dir];
 					if (item.data.offset === e.data.offset) {
@@ -42,7 +48,7 @@ export class BlockNavigator {
 				}
 
 				if (typeof item.data.callback !== 'undefined') {
-					for (var i = 0 ; i < item.data.callback.length ; i++) {
+					for (let i = 0 ; i < item.data.callback.length ; i++) {
 						item.data.callback[i](e.data);
 					}
 				}
@@ -58,8 +64,8 @@ export class BlockNavigator {
 	}
 
 	go(where) {
-		var goNext = (where === NavigatorDirection.AFTER);
-		var dir = (goNext) ? 'next' : 'prev';
+		let goNext:boolean = (where === NavigatorDirection.AFTER);
+		const dir:string = (goNext) ? 'next' : 'prev';
 		var howMany = this.gap;
 
 		if (typeof this.curChunk[dir] !== 'undefined') {
@@ -69,7 +75,7 @@ export class BlockNavigator {
 		} else {
 			this.currentOffset = this.currentOffset + where * this.gap;
 
-			var req = {
+			const req:any = {
 				dir: where,
 				offset: this.currentOffset,
 				status: ChunkStatus.LAUNCHED,
@@ -82,7 +88,7 @@ export class BlockNavigator {
 				this.currentOffset = 0;
 			}
 
-			var newChunk = {
+			let newChunk:Chunk = {
 				data: req,
 				prev: (goNext) ? this.curChunk : undefined,
 				next: (!goNext) ? this.curChunk : undefined
@@ -96,9 +102,8 @@ export class BlockNavigator {
 	}
 
 	get(which, callback, force) {
-		var dir = (which === NavigatorDirection.BEFORE) ? 'prev' : 'next';
-
-		var item;
+		let dir:string = (which === NavigatorDirection.BEFORE) ? 'prev' : 'next';
+		let item:Chunk;
 		if (which === NavigatorDirection.CURRENT) {
 			item = this.curChunk;
 		} else {
@@ -110,7 +115,7 @@ export class BlockNavigator {
 		}
 
 		// If there is a miss (when we start)
-		var req;
+		let req:any;
 		if (typeof item === 'undefined') {
 			if (which === NavigatorDirection.CURRENT) {
 				req = {
@@ -158,9 +163,9 @@ export class BlockNavigator {
 		}
 	}
 
-	isInside_(chunk, offset) {
-		var start = chunk.offset;
-		var end = start + this.gap;
+	isInside_(chunk, offset:number):boolean {
+		const start:number = chunk.offset;
+		const end:number = start + this.gap;
 		return (start <= offset && end >= offset);
 	}
 

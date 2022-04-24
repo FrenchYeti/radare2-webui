@@ -9,20 +9,44 @@ const RULER_GAP = 0.001;
 
 /** Define the global UI context to switch between widgets */
 class UIContext {
+	
+	private focusedWidget: any;
+	private displayedWidgets: any[];
+	private currentLayout: Layouts;
+	private initialized: boolean;
+	private contentNode: HTMLElement;
+	private rulerNode: HTMLElement;
+	private titleNode: HTMLElement;
+	private ruler: Ruler;
 
 	/**	Boolean to check focus on first widget */
-	get isFirstWidgetFocused() { return this.focusedWidget === this.displayedWidgets[0]; }
+	get isFirstWidgetFocused():boolean {
+		return this.focusedWidget === this.displayedWidgets[0]; 
+	}
 
-	/** Tells if current layout is splitted */
-	get isSplitted() { return this.currentLayout !== Layouts.FULL; }
+	/** 
+	 * Tells if current layout is splitted 
+	 * @field
+	 * */
+	get isSplitted() { 
+		return this.currentLayout !== Layouts.FULL; 
+	}
 
-	/** Should be only one UIContext */
+	/**
+	 * Should be only one UIContext
+	 *
+	 * @constructor
+	 * */
 	constructor() {
 		this.initialized = false;
 	}
 
-	/** Bind current widget factory and UI main nodes */
-	init(widgetFactory, contentNodeId, rulerNodeId, titleNodeId) {
+	/**
+	 * Bind current widget factory and UI main nodes
+	 *
+	 * @method
+	 * */
+	init(widgetFactory, contentNodeId:string, rulerNodeId:string, titleNodeId:string) {
 		if (this.initialized) {
 			console.error('UIContext shouldn\'t be initialized more than once.');
 		}
@@ -60,17 +84,17 @@ class UIContext {
 	 * Set focus on current widget
 	 * @param {any} offset 
 	 */
-	setFocusAt(offset) {
-		if (~this.displayedWidgets.indexOf(offset)) {
+	setFocusAt(pOffset) {
+		if (~this.displayedWidgets.indexOf(pOffset)) {
 			console.error('UIContext: focus offset isn\'t correct');
 			return;
 		}
-		if (this.displayedWidgets[offset] === this.focusedWidget) {
+		if (this.displayedWidgets[pOffset] === this.focusedWidget) {
 			return;
 		}
 
 		const losingFocus = this.focusedWidget;
-		const gainingFocus = this.displayedWidgets[offset];
+		const gainingFocus = this.displayedWidgets[pOffset];
 
 		this.widgetFactory.get(losingFocus).lostFocus();
 		this.widgetFactory.get(gainingFocus).gotFocus();
@@ -157,36 +181,36 @@ class UIContext {
 	 * Apply classes to render current layout
 	 * @param {any} node 
 	 */
-	applyLayout(node) {
+	applyLayout(pNode:Element):void {
 		if (this.currentLayout === Layouts.VERTICAL) {
-			node.classList.add('vertical');
+			pNode.classList.add('vertical');
 		}
 	}
 
 	/** Resize a splitted layout between [0;1]% */
-	resizeTo(position) {
+	resizeTo(pPosition:number) {
 		if (!this.isSplitted) {
 			return;
 		}
 
-		this.contentNode.children[0].style.width = (position - RULER_GAP) * 100 + '%';
-		this.contentNode.children[1].style.width = (1 - position - RULER_GAP) * 100 + '%';
+		(this.contentNode.children[0] as HTMLElement).style.width = (pPosition - RULER_GAP) * 100 + '%';
+		(this.contentNode.children[1] as HTMLElement).style.width = (1 - pPosition - RULER_GAP) * 100 + '%';
 	}
 
 	/**
 	 * Split current layout
 	 * @param {Layouts} layout Layout to use
 	 */
-	split(layout) {
+	split(pLayout:Layouts) {
 		if (this.isSplitted) {
 			return;
 		}
 
-		if (layout !== Layouts.VERTICAL) {
+		if (pLayout !== Layouts.VERTICAL) {
 			console.error('Not supported layout.');
 		}
 
-		this.currentLayout = layout;
+		this.currentLayout = pLayout;
 		this.ruler.show();
 
 		for (const child of this.contentNode.children) {
@@ -194,7 +218,9 @@ class UIContext {
 		}
 	}
 
-	/** Merge current layout, we keep currently focused */
+	/**
+	 * Merge current layout, we keep currently focused
+	 * */
 	merge() {
 		if (!this.isSplitted) {
 			return;
@@ -204,8 +230,8 @@ class UIContext {
 		this.ruler.hide();
 		this.currentLayout = Layouts.FULL;
 
-		const focusedNode = this.isFirstWidgetFocused ? this.contentNode.children[0] : this.contentNode.children[1];
-		const otherNode = this.isFirstWidgetFocused ? this.contentNode.children[1] : this.contentNode.children[0];
+		const focusedNode:Element = this.isFirstWidgetFocused ? this.contentNode.children[0] : this.contentNode.children[1];
+		const otherNode:Element = this.isFirstWidgetFocused ? this.contentNode.children[1] : this.contentNode.children[0];
 
 		// We updates styles accordingly (we don't rewrite className for the focused one to keep eventual classes)
 		otherNode.className = 'rwidget';
