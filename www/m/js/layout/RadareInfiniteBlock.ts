@@ -1,10 +1,22 @@
 import {NavigatorDirection} from '../core/NavigatorDirection';
 import {InfiniteScrolling} from '../helpers/InfiniteScrolling';
+import {r2} from "../../../lib/r2";
 
 /**  How many screen we want to retrieve in one round-trip with r2 */
 export const defaultHeightProvisioning = 3;
 
 export class RadareInfiniteBlock {
+
+	heightProvisioning:number;
+	curChunk:any;
+	firstElement:any;
+	initialOffset:any;
+	howManyLines: any;
+	container:any;
+	lineHeight:number;
+	infiniteDrawingContent: any;
+	nav:any;
+
 
 	constructor(heightProvisioning = defaultHeightProvisioning) {
 		this.heightProvisioning = heightProvisioning
@@ -38,10 +50,11 @@ export class RadareInfiniteBlock {
 	 * Gather data and set event to configure infinite scrolling
 	 */
 	defineInfiniteParams(trigger) {
-		var height = (this.container.getBody().offsetHeight === 0) ? 800 : this.container.getBody().offsetHeight;
+		const height = (this.container.getBody().offsetHeight === 0) ? 800 : this.container.getBody().offsetHeight;
+
 		this.howManyLines = Math.floor(height / this.lineHeight * this.heightProvisioning);
 
-		var infiniteScrolling = new InfiniteScrolling(
+		const infiniteScrolling = new InfiniteScrolling(
 			this.container.getBody(),
 			3, /* before, current, after */
 			(typeof trigger !== 'undefined') ? trigger : 0.20 /* when there less than 1/5 visible */

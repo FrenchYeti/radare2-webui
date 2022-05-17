@@ -35,7 +35,7 @@ class R2Wrapper {
 	 * @param {any} value The value to seek
 	 * @param {any} [widget=null] Optional widget for navigation
 	 */
-	seek(pValue:any, pWidget:BaseWidget = null) {
+	seek(pValue:any = undefined, pWidget:BaseWidget|string = null) {
 		// TODO fetch s++ / s-- cmd
 		// TODO keep track of current offset
 		let addr:string;

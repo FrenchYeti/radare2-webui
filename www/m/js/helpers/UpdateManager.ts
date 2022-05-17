@@ -1,3 +1,5 @@
+let gInstance:UpdateManager = null;
+
 export class UpdateManager {
 
 	updateMethods:any[];
@@ -6,6 +8,14 @@ export class UpdateManager {
 	constructor() {
 		this.updateMethods = [{}, {}];
 		this.currentFocus;
+	}
+
+	static getInstance():UpdateManager {
+		if(gInstance != null){
+			return gInstance;
+		}
+		gInstance = new UpdateManager();
+		return gInstance;
 	}
 
 	registerMethod(offset, method) {

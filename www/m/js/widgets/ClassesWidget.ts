@@ -3,14 +3,19 @@ import {Inputs} from '../helpers/Inputs';
 import {Table} from '../helpers/Table';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 import {Widgets} from '../widgets/Widgets';
+import {r2} from "../../../lib/r2"
+import StatusBar from "../helpers/statusbar/StatusBar";
 
 export class ClassesWidget extends BaseWidget {
+
+
 	constructor() {
 		super('Classes');
 	}
 
-	init() {
+	init():void {
 		this.inColor = true; // TODO
+
 		r2.cmd('e scr.utf8=false');
 
 		r2Wrapper.registerListener(R2Actions.SEEK, () => {
@@ -22,23 +27,24 @@ export class ClassesWidget extends BaseWidget {
 	}
 
 	draw() {
-		this.node.innerHTML = '';
-		this.node.scrollTop = 0;
-		this.node.appendChild(this.getPanel());
+		this._node.innerHTML = '';
+		this._node.scrollTop = 0;
+		this._node.appendChild(this.getPanel());
 	}
 
 	getPanel() {
-		var c = document.createElement('div');
+		const c:HTMLDivElement = document.createElement('div');
+		const header:HTMLDivElement = document.createElement('div');
 
-		var header = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
+
 		c.appendChild(header);
 
 		header.appendChild(Inputs.button('Refresh', () => {
-			statusMessage('Analyzing symbols...');
+			StatusBar.statusMessage('Analyzing symbols...');
 			r2.cmd('aa', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));

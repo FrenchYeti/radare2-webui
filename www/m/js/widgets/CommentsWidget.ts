@@ -7,11 +7,14 @@ import {Table} from '../helpers/Table';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 
 export class CommentsWidget extends BaseWidget {
+
+	displayed:boolean = false;
+
 	constructor() {
 		super('Comments');
 	}
 
-	init() {
+	init():void {
 		r2Wrapper.registerListener(R2Actions.SEEK, () => {
 			if (this.displayed) {
 				this.draw();
@@ -19,7 +22,7 @@ export class CommentsWidget extends BaseWidget {
 		});
 	}
 
-	draw() {
+	draw():void {
 		this.node.innerHTML = '';
 		this.node.appendChild(this.getPanel());
 	}

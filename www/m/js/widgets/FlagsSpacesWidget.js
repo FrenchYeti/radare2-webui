@@ -1,5 +1,4 @@
 import {BaseWidget} from './BaseWidget';
-
 import {uiContext} from '../core/UIContext';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 import {Widgets} from './Widgets';

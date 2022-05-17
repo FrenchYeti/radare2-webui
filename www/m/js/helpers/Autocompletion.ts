@@ -1,10 +1,11 @@
 import {r2Wrapper} from '../core/R2Wrapper';
 import {Widgets} from '../widgets/Widgets';
+import {r2} from "../../../lib/r2";
 
-const ACKeys = {
-	UP: 38,
-	DOWN: 40,
-	ENTER: 13
+enum ACKeys {
+	UP = 38,
+	DOWN = 40,
+	ENTER = 13
 }
 
 const ACNodes = {
@@ -17,6 +18,24 @@ const ACNodes = {
  */
 export class Autocompletion {
 
+
+	formID:string;
+	dropdownID:string;
+
+	form_:HTMLElement;
+	dropdown_:HTMLElement;
+
+	cmd_:string;
+	minChar_:number;
+	maxProp_:number;
+
+
+	flags_:any = null;
+	activeChoice_:number = 0;
+	prevLength_:number = 0;
+	list_:any = null;
+	completions_:any = null;
+
 	/**
 	 * @param {String} formId - Literal DOM id #field
 	 * @param {String} choicesId - Literal DOM id #dropdown
@@ -24,9 +43,9 @@ export class Autocompletion {
 	 * @param {integer} minChar - number of charcaters to start autocompletion
 	 * @param {integer} maxProp - maximum propositions to offer
 	 */
-	constructor(formId, choicesId, cmd, minChar, maxProp) {
-		this.form_ = formId;
-		this.dropdown_ = choicesId;
+	constructor(formId:string, choicesId:string, cmd:string, minChar:number = 0, maxProp:number = 0) {
+		this.formID = formId;
+		this.dropdownID = choicesId;
 		this.cmd_ = cmd;
 		this.minChar_ = minChar || 2;
 		this.maxProp_ = maxProp || 10;
@@ -34,35 +53,35 @@ export class Autocompletion {
 	}
 
 	init_() {
-		this.form_ = document.getElementById(this.form_);
-		this.dropdown_ = document.getElementById(this.dropdown_);
+		this.form_ = document.getElementById(this.formID);
+		this.dropdown_ = document.getElementById(this.dropdownID);
 
-		var boundKeyUpHandler = this.keyHandler.bind(this);
+		const boundKeyUpHandler = this.keyHandler.bind(this);
 		this.form_.addEventListener('keyup', boundKeyUpHandler);
 
-		var _this = this;
-		this.form_.addEventListener('focus', function() {
+		const _this = this;
+		this.form_.addEventListener('focus', () => {
 			if (_this.prevLength_ >= _this.minChar_) {
 				_this.show();
 			}
 		});
 
-		this.form_.addEventListener('blur', function() {
+		this.form_.addEventListener('blur', () => {
 			_this.hide();
 		});
 
-		this.flags_;
+		this.flags_ = null;
 		this.activeChoice_ = 0;
 		this.prevLength_ = 0;
-		this.list_;
-		this.completions_;
+		this.list_ = null;
+		this.completions_ = null;
 
 		this.populate_();
 	}
 
 	populate_() {
-		var _this = this;
-		r2.cmdj(this.cmd_, function(f) {
+		const _this = this;
+		r2.cmdj(this.cmd_, (f:string) => {
 			_this.flags_ = f;
 		});
 	}
@@ -197,14 +216,14 @@ export class Autocompletion {
 		}
 	}
 
-	setPrepareView(callback) {
+	setPrepareView(callback):void {
 		this.preparationCallback = callback;
 	}
 
 	/**
 	 * Prepare view to show the result
 	 */
-	prepareView() {
+	prepareView():void {
 		if (typeof this.preparationCallback === 'undefined') {
 			return;
 		}

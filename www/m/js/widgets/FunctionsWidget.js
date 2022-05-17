@@ -3,6 +3,7 @@ import {Inputs} from '../helpers/Inputs';
 import {Table} from '../helpers/Table';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 import {Widgets} from '../widgets/Widgets';
+import StatusBar from "../helpers/statusbar/StatusBar";
 
 export class FunctionsWidget extends BaseWidget {
 	constructor() {
@@ -36,41 +37,41 @@ export class FunctionsWidget extends BaseWidget {
 		c.appendChild(header);
 
 		header.appendChild(Inputs.button('Symbols', () => {
-			statusMessage('Analyzing symbols...');
+			StatusBar.statusMessage('Analyzing symbols...');
 			r2.cmd('aa', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Calls', () => {
-			statusMessage('Analyzing calls...');
+			StatusBar.statusMessage('Analyzing calls...');
 			r2.cmd('aac', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Function', () => {
-			statusMessage('Analyzing function...');
+			StatusBar.statusMessage('Analyzing function...');
 			r2.cmd('af', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Refs', () => {
-			statusMessage('Analyzing references...');
+			StatusBar.statusMessage('Analyzing references...');
 			r2.cmd('aar', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('AutoName', () => {
-			statusMessage('Analyzing names...');
+			StatusBar.statusMessage('Analyzing names...');
 			r2.cmd('.afna @@ fcn.*', () => {
-				statusMessage('done');
+				StatusBar.statusMessage('done');
 				this.draw();
 			});
 		}));

@@ -11,12 +11,12 @@
     ],
     "types": [
       "node",
-      "mocha",
       "chai"
     ]
   },
   "include": [
-    "js/**/*.ts"
+    "js/**/*.ts",
+    "node_modules/@types/material-design-lite/index.d.ts"
   ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

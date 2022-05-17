@@ -88,7 +88,7 @@ function statusMessage(x, t) {
 		}
 		if (typeof t !== 'undefined') {
 			statusTimeout = setTimeout(function() {
-				statusMessage('&nbsp;');
+				StatusBar.statusMessage('&nbsp;');
 			}, t * 1000);
 		}
 	} else {

@@ -3,7 +3,10 @@
  * Create two area: control + body
  */
 export class FlexContainer {
-	
+
+	classes:string;
+	container:any;
+
 	constructor(dom, classes) {
 		this.classes = (typeof classes === 'undefined') ? '' : classes;
 		this.init(dom);
