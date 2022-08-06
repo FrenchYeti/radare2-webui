@@ -17,5 +17,6 @@ export const Widgets = {
 	SCRIPTS: 'scripts',
 	COMMENTS: 'comments',
 	NOTES: 'notes',
-	SETTINGS: 'settings'
+	SETTINGS: 'settings',
+	STRINGS: 'strings'
 }

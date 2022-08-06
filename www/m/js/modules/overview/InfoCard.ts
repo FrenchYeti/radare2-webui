@@ -2,6 +2,10 @@ import {formatOffsets} from '../../helpers/Format';
 import {Widgets} from '../../widgets/Widgets';
 
 export class InfoCard {
+	private card: any;
+	private headersCmd: any[];
+	private tabs: HTMLDivElement;
+	private content: HTMLDivElement;
 
 	get DOM() { return this.card; }
 	get nbTabs() { return this.headersCmd.length }
@@ -42,20 +46,20 @@ export class InfoCard {
 		this.createTabs(this.headersCmd, this.tabs, this.content);
 	}
 
-	createTabs(items, tabsNode, contentNode) {
+	createTabs(items:any, pTabsNode:HTMLDivElement, pContentNode:HTMLDivElement) {
 		let first = true;
 		for (let i in items)
 		{
 			const item = items[i];
 			const tabName = 'tab-' + item.name;
 
-			const tab = document.createElement('a');
+			const tab:HTMLAnchorElement = document.createElement('a');
 			tab.classList.add('mdl-tabs__tab');
 			tab.href = '#' + tabName;
 			tab.title = item.title;
 			tab.innerHTML = item.name;
 
-			const content = document.createElement('div');
+			const content:HTMLDivElement = document.createElement('div');
 			content.classList.add('mdl-tabs__panel');
 			content.id = tabName;
 
@@ -67,12 +71,12 @@ export class InfoCard {
 
 			tab.addEventListener('click', () => this.loadTab(content, item));
 
-			tabsNode.appendChild(tab);
-			contentNode.appendChild(content);
+			pTabsNode.appendChild(tab);
+			pContentNode.appendChild(content);
 		}
 	}
 
-	fixHeight(minHeight) {
+	fixHeight(minHeight:number) {
 		// First we reset height
 		this.content.style.height = '0px';
 
@@ -85,13 +89,13 @@ export class InfoCard {
 		this.content.style.overflow = 'auto';
 	}
 
-	preloadTabs(nb) {
+	preloadTabs(nb:number) {
 		nb = (nb > this.nbTabs) ? this.nbTabs : nb;
 		for (let i = 0 ; i < nb ; i++)
 			this.loadTab(this.content.children[i], this.headersCmd[i]);
 	}
 
-	loadTab(node, item) {
+	loadTab(node:HTMLDivElement, item:any) {
 		if (item.ready) {
 			return;
 		}
@@ -132,16 +136,16 @@ export class InfoCard {
 		}
 	}
 
-	fromatAsCode(txt) {
+	fromatAsCode(txt:string):HTMLPreElement {
 		const pre = document.createElement('pre');
-		pre.style.marge = '1.2em';
+		pre.style.margin = '1.2em';
 		pre.appendChild(formatOffsets(txt, Widgets.DISASSEMBLY));
 		return pre;
 	}
 
 	/** Take a text input to give a HTML description list  */
-	formatAsKeyValue(txt) {
-		const content = document.createElement('dl');
+	formatAsKeyValue(txt:string):HTMLElement {
+		const content:HTMLElement = document.createElement('dl');
 		content.classList.add('infocard');
 
 		const lines = txt.split(/\n/g);

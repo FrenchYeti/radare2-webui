@@ -5,6 +5,9 @@ import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 export class HexdumpWidget extends BaseWidget {
 
 	private firstTime: boolean;
+	private hexdump: Hexdump;
+	private isBigEndian = false;
+
 
 	constructor() {
 		super('Hexdump', 'dark');

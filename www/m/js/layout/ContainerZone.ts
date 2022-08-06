@@ -1,12 +1,34 @@
 import {UpdateManager} from '../helpers/UpdateManager';
 import {Layouts} from './Layouts';
+import {BaseWidget} from "../widgets/BaseWidget";
+
+export interface RulerProps {
+	pos: number;
+	gap: number;
+}
+
+export interface UpdateManagers {
+	updates :UpdateManager;
+	lastViews :UpdateManager;
+}
 
 /**
  * Making a splittable container zone
  */
 export class ContainerZone {
+	private container: HTMLElement;
+	private ruler: HTMLElement;
+	private title: HTMLElement;
+	private currentLayout: Layouts;
+	private widgets: BaseWidget[];
+	private populatedWidgets: any[];
+	private focus_: number;
+	private focusListeners: any[];
+	private updateManagers: UpdateManagers;
+	private fallback: any;
+	private rulerProp: RulerProps;
 	
-	constructor(containerNode, rulerNode, titleNode) {
+	constructor(containerNode:string, rulerNode:string, titleNode:string) {
 		this.container = document.getElementById(containerNode);
 		this.ruler = document.getElementById(rulerNode);
 		this.title = document.getElementById(titleNode);
@@ -18,16 +40,17 @@ export class ContainerZone {
 		this.focus_ = 0;
 		this.focusListeners = [];
 
-		var _this = this;
+		const _this = this;
 		this.fallback = function() {
-			var emptyWidget = _this.getWidget('New Widget', false);
+			const emptyWidget = _this.getWidget('New Widget', false);
 			emptyWidget.setHTMLContent('<p class="mdl-typography--text-center">Ready !</p>');
 			_this.add(emptyWidget);
 		};
 
-		this.updateManagers = {};
-		this.updateManagers.updates = new UpdateManager();
-		this.updateManagers.lastViews = new UpdateManager();
+		this.updateManagers = {
+			updates: new UpdateManager(),
+			lastViews: new UpdateManager(),
+		};
 
 		this.addFocusListener(this.updateManagers.updates);
 		this.addFocusListener(this.updateManagers.lastViews);
@@ -41,15 +64,15 @@ export class ContainerZone {
 	}
 
 	initRuler() {
-		var context = {};
-		var _this = this;
+		let context = {};
+		const _this:ContainerZone = this;
 
 		this.rulerProp = {
 			gap: 0.005, // 0.5% margin between two panels
 			pos: 0.5
 		};
 
-		var initDrag = function(e) {
+		const initDrag = function(e) {
 			context = {
 				startX: e.clientX,
 				startWidth: parseInt(document.defaultView.getComputedStyle(_this.ruler).width, 10),
@@ -62,15 +85,15 @@ export class ContainerZone {
 			e.preventDefault();
 		};
 
-		var doDrag = function(e) {
-			var relativePosition = (e.clientX - context.interval) / _this.container.offsetWidth;
+		const doDrag = function(e) {
+			const relativePosition = (e.clientX - context.interval) / _this.container.offsetWidth;
 			_this.rulerProp.pos = relativePosition;
 			_this.container.children[0].style.width = (relativePosition - _this.rulerProp.gap) * 100 + '%';
 			_this.container.children[1].style.width = ((1 - relativePosition) - _this.rulerProp.gap) * 100 + '%';
 			_this.ruler.style.marginLeft = relativePosition * 100 + '%';
 		};
 
-		var stopDrag = function() {
+		const  stopDrag = function() {
 			document.documentElement.removeEventListener('mousemove', doDrag, false);
 			document.documentElement.removeEventListener('mouseup', stopDrag, false);
 		};
@@ -78,14 +101,14 @@ export class ContainerZone {
 		this.ruler.addEventListener('mousedown', initDrag);
 	}
 
-	setFocus(focus) {
+	setFocus(focus:number) {
 		this.focus_ = focus;
-		for (var i = 0 ; i < this.focusListeners.length ; i++) {
+		for (let i = 0 ; i < this.focusListeners.length ; i++) {
 			this.focusListeners[i].focusHasChanged(focus);
 		}
 	}
 
-	getFocus() {
+	getFocus():number {
 		return this.focus_;
 	}
 
@@ -93,11 +116,11 @@ export class ContainerZone {
 	 * Autobinding implies the widget to be populated as is
 	 * Will be completed by the user manipulating the widget
 	 */
-	getWidget(name, autobinding) {
-		var autobinding = (typeof autobinding === 'undefined'); // Default is true
+	getWidget(pName:string, pAutobinding:boolean):BaseWidget {
+		let autobinding:boolean = (typeof pAutobinding === 'undefined'); // Default is true
 
-		for (var i = 0 ; i < this.widgets.length ; i++) {
-			if (this.widgets[i].getName() === name) {
+		for (let i = 0 ; i < this.widgets.length ; i++) {
+			if (this.widgets[i].getName() === pName) {
 				if (autobinding) { // Autobinding
 					this.add(this.widgets[i]);
 				}
@@ -105,7 +128,7 @@ export class ContainerZone {
 			}
 		}
 
-		var newWidget = new Widget(name);
+		let newWidget = new BaseWidget(pName);
 		this.widgets.push(newWidget);
 
 		if (autobinding) {
@@ -115,8 +138,8 @@ export class ContainerZone {
 		return newWidget;
 	}
 
-	getWidgetDOMWrapper(widget) {
-		var offset = this.populatedWidgets.indexOf(widget);
+	getWidgetDOMWrapper(pWidget:any) {
+		const offset = this.populatedWidgets.indexOf(pWidget);
 		if (offset === -1) {
 			console.log('Can\'t get DOM wrapper of a non-populated widget');
 			return;
@@ -125,7 +148,7 @@ export class ContainerZone {
 		return this.container.children[offset];
 	}
 
-	isSplitted() {
+	isSplitted():boolean {
 		return this.currentLayout !== Layouts.FULL;
 	}
 
@@ -139,7 +162,7 @@ export class ContainerZone {
 		this.ruler.style.display = 'none';
 		this.rulerProp.pos = 0.5;
 
-		var keep = this.getWidgetDOMWrapper(this.populatedWidgets[this.getFocus()]);
+		let keep = this.getWidgetDOMWrapper(this.populatedWidgets[this.getFocus()]);
 		keep.className = 'rwidget full focus';
 		keep.style.width = 'auto';
 
@@ -264,8 +287,8 @@ export class ContainerZone {
 		if (this.currentLayout === Layouts.FULL || this.populatedWidgets.length === 1) {
 			this.title.innerHTML = this.populatedWidgets[0].getName();
 		} else {
-			var titles = [];
-			for (var i = 0 ; i < this.populatedWidgets.length ; i++) {
+			const titles = [];
+			for (let i = 0 ; i < this.populatedWidgets.length ; i++) {
 				if (this.getFocus() === i) {
 					titles.push('<strong>' + this.populatedWidgets[i].getName() + '</strong>');
 				} else {
@@ -276,15 +299,15 @@ export class ContainerZone {
 		}
 	}
 
-	applyFocusEvent_(widget) {
-		var _this = this;
-		var element = this.getWidgetDOMWrapper(widget);
+	applyFocusEvent_(widget):void {
+		const _this = this;
+		const element = this.getWidgetDOMWrapper(widget);
 		element.addEventListener('mousedown', function() {
 			_this.moveFocusOnWidget(widget);
 		});
 	}
 
-	addFocusListener(obj) {
+	addFocusListener(obj):void {
 		this.focusListeners.push(obj);
 	}
 }

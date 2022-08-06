@@ -4,10 +4,17 @@ import {Widgets} from '../../widgets/Widgets';
 const xmlns = "http://www.w3.org/2000/svg";
 
 export class EntropyCard {
+	private card: HTMLDivElement;
+	private width: number;
+	private height: number;
+	private entropy: any[];
+	private svg: SVGSVGElement;
+	private opacity: number;
+	private color: string;
 
 	get DOM() { return this.card; }
 
-	constructor(width, height) {
+	constructor(width:number, height:number) {
 		this.width = width;
 		this.height = height;
 		this.entropy = [];
@@ -51,7 +58,7 @@ export class EntropyCard {
 		const height = this.height;
 
 		this.svg.innerHTML = '';
-		for (let i in this.entropy)
+		for (let i=0; i<this.entropy.length; i++)
 		{
 			const cur = this.entropy[i];
 			const opacity = 0.1 + (1 - 0.1) * ((cur.value - minVal) / (maxVal - minVal));
@@ -65,21 +72,21 @@ export class EntropyCard {
 			g.appendChild(title);
 
 			const rect = document.createElementNS(xmlns, 'rect');
-			rect.setAttribute('x', width * i);
-			rect.setAttribute('y', 0);
-			rect.setAttribute('width', width);
-			rect.setAttribute('height', height);
+			rect.setAttribute('x', (width * i)+"");
+			rect.setAttribute('y', "0");
+			rect.setAttribute('width', width+"");
+			rect.setAttribute('height', height+"");
 			rect.setAttribute('fill', '#000');
-			rect.setAttribute('fill-opacity', opacity);
+			rect.setAttribute('fill-opacity', this.opacity+"");
 
 			const text = document.createElementNS(xmlns, 'text');
-			const color = (opacity > 0.4) ? '#EEEEEE' : 'black';
-			text.setAttribute('x', width * i + 2);
-			text.setAttribute('y', height + 10);
-			text.setAttribute('fill', color);
+			const color = ( this.opacity > 0.4) ? '#EEEEEE' : 'black';
+			text.setAttribute('x', ((width * i) + 2)+"");
+			text.setAttribute('y', (height + 10)+"");
+			text.setAttribute('fill', this.color);
 			text.setAttribute('font-family', 'Roboto');
-			text.setAttribute('font-size', 12);
-			text.setAttribute('transform', 'rotate(-90, ' + width * i + ', ' + height + ')');
+			text.setAttribute('font-size', "12");
+			text.setAttribute('transform', 'rotate(-90, ' + width * i + ', ' +  height + ')');
 			text.textContent = '0x' + cur.addr.toString(16);
 
 			g.appendChild(rect);   

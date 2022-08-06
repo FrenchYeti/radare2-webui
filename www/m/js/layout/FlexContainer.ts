@@ -5,15 +5,20 @@
 export class FlexContainer {
 
 	classes:string;
-	container:any;
+	container:HTMLElement;
+	controls:HTMLDivElement;
+	body:HTMLDivElement;
+	private textDialog: HTMLParagraphElement;
+	private dialog: HTMLDialogElement;
+	dialogHasBeenDrawn:boolean;
 
-	constructor(dom, classes) {
+	constructor( pContainer:HTMLElement, classes:string) {
 		this.classes = (typeof classes === 'undefined') ? '' : classes;
-		this.init(dom);
+		this.init(pContainer);
 	}
 
-	init(dom) {
-		this.container = dom;
+	init(pContainer:HTMLElement) {
+		this.container = pContainer;
 		this.container.innerHTML = '';
 
 		this.controls = document.createElement('div');
@@ -26,8 +31,8 @@ export class FlexContainer {
 		this.container.appendChild(this.body);
 	}
 
-	replug(dom) {
-		this.container = dom;
+	replug(pContainer:HTMLElement) {
+		this.container = pContainer;
 		this.container.innerHTML = '';
 		this.container.appendChild(this.controls);
 		this.container.appendChild(this.body);
@@ -37,11 +42,11 @@ export class FlexContainer {
 		this.init(this.container);
 	}
 
-	getControls() {
+	getControls():HTMLDivElement {
 		return this.controls;
 	}
 
-	drawControls(callback) {
+	drawControls(callback:any) {
 		this.controls.innerHTML = '';
 		callback(this.controls);
 	}
@@ -50,12 +55,12 @@ export class FlexContainer {
 		return this.body;
 	}
 
-	drawBody(callback) {
+	drawBody(callback:any) {
 		this.body.innerHTML = '';
 		callback(this.body);
 	}
 
-	pause(msg) {
+	pause(msg:string) {
 		if (!this.dialogHasBeenDrawn) {
 			this.drawEmptyDialog();
 		}
@@ -65,7 +70,7 @@ export class FlexContainer {
 	}
 
 	drawEmptyDialog() {
-		var _this = this;
+		const _this = this;
 		this.dialog = document.createElement('dialog');
 		this.dialog.className = 'mdl-dialog';
 

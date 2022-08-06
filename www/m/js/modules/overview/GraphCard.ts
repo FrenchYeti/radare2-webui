@@ -3,8 +3,11 @@ import {r2Wrapper} from '../../core/R2Wrapper';
 import {Widgets} from '../../widgets/Widgets';
 
 export class GraphCard {
+	private card: HTMLDivElement;
 
-	get DOM() { return this.card; }
+	get DOM() {
+		return this.card;
+	}
 
 	constructor() {
 		this.build();
@@ -29,7 +32,7 @@ export class GraphCard {
 		this.card.appendChild(functionsChart);
 	}
 
-	createChart(name, title, color, value, onclick) {
+	createChart(name:string, title:string, color:any, value:number, onclick:any):SVGSVGElement {
 		const xmlns = "http://www.w3.org/2000/svg";
 		const svg = document.createElementNS(xmlns, 'svg');
 		svg.setAttribute('class', 'demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop');
@@ -57,7 +60,7 @@ export class GraphCard {
 		textLegend.textContent = name;
 		svg.appendChild(textLegend);
 
-		const textValue = document.createElementNS(xmlns, 'text');
+		const textValue:SVGTextElement = document.createElementNS(xmlns, 'text');
 		textValue.setAttribute('x', '0.5');
 		textValue.setAttribute('y', '0.5');
 		textValue.setAttribute('font-family', 'Roboto');
@@ -65,7 +68,7 @@ export class GraphCard {
 		textValue.setAttribute('fill', '#888');
 		textValue.setAttribute('text-anchor', 'middle');
 		textValue.setAttribute('dy', '0.1');
-		textValue.textContent = value;
+		textValue.textContent = value+"";
 		svg.appendChild(textValue);
 
 		const textPercentage = document.createElementNS(xmlns, 'tspan');

@@ -47,7 +47,6 @@
 			}
 		}
 	}
-
 	r2.err = function() {
 		if (!isOpen) {
 			refresh();

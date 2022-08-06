@@ -37,41 +37,41 @@ export class FunctionsWidget extends BaseWidget {
 		c.appendChild(header);
 
 		header.appendChild(Inputs.button('Symbols', () => {
-			StatusBar.statusMessage('Analyzing symbols...');
+			StatusBar.getInstance().statusMessage('Analyzing symbols...');
 			r2.cmd('aa', () => {
-				StatusBar.statusMessage('done');
+				StatusBar.getInstance().statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Calls', () => {
-			StatusBar.statusMessage('Analyzing calls...');
+			StatusBar.getInstance().statusMessage('Analyzing calls...');
 			r2.cmd('aac', () => {
-				StatusBar.statusMessage('done');
+				StatusBar.getInstance().statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Function', () => {
-			StatusBar.statusMessage('Analyzing function...');
+			StatusBar.getInstance().statusMessage('Analyzing function...');
 			r2.cmd('af', () => {
-				StatusBar.statusMessage('done');
+				StatusBar.getInstance().statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('Refs', () => {
-			StatusBar.statusMessage('Analyzing references...');
+			StatusBar.getInstance().statusMessage('Analyzing references...');
 			r2.cmd('aar', () => {
-				StatusBar.statusMessage('done');
+				StatusBar.getInstance().statusMessage('done');
 				this.draw();
 			});
 		}));
 
 		header.appendChild(Inputs.button('AutoName', () => {
-			StatusBar.statusMessage('Analyzing names...');
+			StatusBar.getInstance().statusMessage('Analyzing names...');
 			r2.cmd('.afna @@ fcn.*', () => {
-				StatusBar.statusMessage('done');
+				StatusBar.getInstance().statusMessage('done');
 				this.draw();
 			});
 		}));

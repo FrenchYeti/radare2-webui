@@ -9,15 +9,16 @@ import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 const inColor = true; // TODO inColor
 
 export class DisassemblyGraphWidget extends BaseWidget {
+	private _backButton: HTMLElement;
 	constructor() {
 		super('Graph', 'dark');
 	}
 
 	init() {
-		this.backButton = Inputs.iconButton('undo', 'Back to Disassembly', () => uiContext.navigateTo(Widgets.DISASSEMBLY));
-		this.backButton.style.position = 'absolute';
-		this.backButton.style.top = '1em';
-		this.backButton.style.left = '1em';
+		this._backButton = Inputs.iconButton('undo', 'Back to Disassembly', () => uiContext.navigateTo(Widgets.DISASSEMBLY));
+		this._backButton.style.position = 'absolute';
+		this._backButton.style.top = '1em';
+		this._backButton.style.left = '1em';
 
 		r2Wrapper.registerListener(R2Actions.SEEK, () => {
 			if (this.displayed) {
@@ -27,7 +28,7 @@ export class DisassemblyGraphWidget extends BaseWidget {
 	}
 
 	draw() {
-		this.node.appendChild(this.backButton);
+		this.node.appendChild(this._backButton);
 		this.node.appendChild(this.getGraph());
 	}
 

@@ -69,10 +69,10 @@ export default class StatusBar {
             case StatusBarTab.CONSOLE:
                 docEl = document.createElement('div');
                 docEl.id = 'tab_terminal';
-                docEl.appendChild(this.addElement('div', 'terminal'));
-                docEl.appendChild(this.addElement('div', 'terminal_output'));
-                var pr0mpt = this.addElement('div', 'terminal_prompt');
-                pr0mpt.appendChild(this.addElement('input', 'terminal_input'));
+                docEl.appendChild(this._addHTMLElement('div', 'terminal'));
+                docEl.appendChild(this._addHTMLElement('div', 'terminal_output'));
+                var pr0mpt = this._addHTMLElement('div', 'terminal_prompt');
+                pr0mpt.appendChild(this._addHTMLElement('input', 'terminal_input'));
                 docEl.appendChild(pr0mpt);
                 break;
         }
@@ -85,12 +85,18 @@ export default class StatusBar {
             if (!terminalEl) {
                 statusbarEl.parentNode.insertBefore (docEl, statusbarEl);
                 if (this.tab === StatusBarTab.CONSOLE) {
-                    terminal_ready ();
+                    this.terminal_ready();
                 }
             }
         }
     }
 
+    private _addHTMLElement(pType:string, pID:string):HTMLElement{
+        const doc = document.createElement(pType);
+        doc.id = pID;
+        doc.className = pID;
+        return doc;
+    }
     statusMessage(x:string, t:any = null):void {
         const statusbar = document.getElementById('statusbar');
         if (x) {
@@ -187,7 +193,7 @@ export default class StatusBar {
 
     statusConsole() {
         let statusbarEl:HTMLElement = document.getElementById('statusbar');
-        var container = document.getElementById('container');
+        const container = document.getElementById('container');
         if (this.tab === StatusBarTab.CONSOLE) {
             if (this.mode !== StatusBarMode.LINE) {
                 this.statusToggle();
@@ -200,7 +206,7 @@ export default class StatusBar {
             /* do something here */
             this.mode = StatusBarMode.LINE;
         } else if (this.mode === StatusBarMode.LINE) {
-            this.tab = StatusBarMode.CONSOLE;
+            this.tab = StatusBarTab.CONSOLE;
             this.mode = StatusBarMode.HALF;
             try {
                 (statusbarEl.parentNode as any).classList.remove('full');

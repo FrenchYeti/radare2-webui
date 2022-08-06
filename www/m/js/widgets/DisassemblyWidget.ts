@@ -3,17 +3,19 @@ import {Disassembly} from '../modules/disasm/Disassembly';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 
 export class DisassemblyWidget extends BaseWidget {
+	private _firstTime: boolean;
+	private disasm: Disassembly;
 
 	constructor() {
 		super('Disassembly', 'disasmPanel', 'dark');
 	}
 
 	init() {
-		this.firstTime = true;
+		this._firstTime = true;
 	}
 
 	draw() {
-		if (this.firstTime) {
+		if (this._firstTime) {
 			this.disasm = new Disassembly(this.node, 24);
 			r2Wrapper.registerListener(R2Actions.SEEK, () => {
 				if (!this.displayed) return;
@@ -22,7 +24,7 @@ export class DisassemblyWidget extends BaseWidget {
 				this.disasm.draw();
 				this.disasm.onSeek();
 			});
-			this.firstTime = false;
+			this._firstTime = false;
 		} else {
 			this.disasm.resetContainer(this.node);
 		}

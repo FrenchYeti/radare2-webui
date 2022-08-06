@@ -1,4 +1,14 @@
+export interface AnalysisMethod {
+	id:string;
+	name:string;
+	cmd:string;
+	disabledCmd?:string;
+}
+
 export class AnalysisCard {
+	private card: any;
+	private analysisMethods: AnalysisMethod[];
+	private analysisCallback: any;
 
 	get DOM() { return this.card; }
 	set onAnalysis(value ) { this.analysisCallback = value; }
@@ -62,9 +72,9 @@ export class AnalysisCard {
 			const li = document.createElement('li');
 			dom.appendChild(li);
 
-			const label = document.createElement('label');
+			const label:HTMLLabelElement = document.createElement('label');
 			label.className = 'mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect';
-			label.for = methodId;
+			label.htmlFor = methodId;
 			li.appendChild(label);
 
 			const checkbox = document.createElement('input');
@@ -89,9 +99,9 @@ export class AnalysisCard {
 		let atLeastOneChecked = false;
 		for (let i in this.analysisMethods)
 		{
-			const method = this.analysisMethods[i];
+			const method:AnalysisMethod = this.analysisMethods[i];
 			const methodId = 'anal_' + method.id;
-			const element = document.getElementById(methodId);
+			const element:HTMLInputElement = document.getElementById(methodId) as HTMLInputElement;
 
 			if (element.checked) {
 				r2.cmd(method.cmd);

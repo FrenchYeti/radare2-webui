@@ -36,6 +36,9 @@ export class BaseWidget {
 		this.displayed = false;
 	}
 
+	getName():string {
+		return this.name;
+	}
 	/**
 	 * Init the module used inside component, called once
 	 *

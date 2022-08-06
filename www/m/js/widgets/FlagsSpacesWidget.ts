@@ -6,7 +6,9 @@ import {Table} from '../helpers/Table';
 import {Inputs} from '../helpers/Inputs';
 
 export class FlagsSpacesWidget extends BaseWidget {
-	activeEls = [];
+
+	activeEls:any[] = [];
+	current: string;
 	
 	constructor() {
 		super('Flag Spaces');
@@ -29,12 +31,12 @@ export class FlagsSpacesWidget extends BaseWidget {
 	}
 	
 	getPanel() {
-		var c = document.createElement('div');
+		const c:HTMLDivElement = document.createElement('div');
 		if (this.inColor) {
 			c.style.backgroundColor = '#202020';
 		}
 
-		var header = document.createElement('div');
+		const header = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
@@ -45,7 +47,7 @@ export class FlagsSpacesWidget extends BaseWidget {
 		header.appendChild(Inputs.button('Delete', () => this.delFlagspace()));
 		header.appendChild(Inputs.button('Rename', () => this.renameFlagspace()));
 
-		var content = document.createElement('div');
+		const content = document.createElement('div');
 		content.appendChild(document.createTextNode('Click on a row to select it.'));
 		content.style.paddingTop = '70px';
 		c.appendChild(content);
@@ -66,7 +68,7 @@ export class FlagsSpacesWidget extends BaseWidget {
 				const a = document.createElement('a');
 				a.textContent = x.name;
 				if (x.selected){
-					a.classList.add(['active']);
+					a.classList.add('active');
 					this.activeEls.push(a);
 				}
 
@@ -74,10 +76,10 @@ export class FlagsSpacesWidget extends BaseWidget {
 					console.log(x.name, e);
 					r2.cmd('fs ' + x.name, (h)=>{
 						this.activeEls = this.activeEls.filter(e => {
-							e.classList.remove(['active']);
+							e.classList.remove('active');
 							return false;
 						});
-						a.classList.add(['active']);
+						a.classList.add('active');
 						this.activeEls.push(a);
 					});
 					this.draw();
@@ -99,7 +101,7 @@ export class FlagsSpacesWidget extends BaseWidget {
 	}
 
 	setFlagspace() {
-		let fs = this.current;
+		let fs:string = this.current;
 		if (!fs) {
 			fs = prompt('name');
 		}

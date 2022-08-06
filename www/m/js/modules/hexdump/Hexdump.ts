@@ -9,15 +9,40 @@ import {Widgets} from '../../widgets/Widgets';
 import {Inputs} from '../../helpers/Inputs';
 import {applySeek, formatOffset} from '../../helpers/Format';
 import {r2Wrapper} from '../../core/R2Wrapper';
+import {Utils} from "../Utils";
 
+
+export interface HexdumpSelection {
+	from?:number;
+	to?:number;
+}
 /**
  * UI management
  * Container should be currently sized for the purpose
  * lineHeight should be specified in pixels
  */
 export class Hexdump extends RadareInfiniteBlock {
+
+	private bigEndian: any;
+	private nbColumns: number;
+	private hexLength: WordSizes;
+	private showFlags: boolean;
+	private beingSelected: boolean;
+	private selectionFirst: Element;
+	private selectionEnd: Element;
+	private lastColorUsed: number;
+	private bgColors: string[];
+	private flagColorAssociation: string[];
+	private onChangeCallback: any;
+	private colors: any;
+	private writable: any;
+	private selectionMode: any;
+	private contextMenuOpen: any;
+	private currentSelection: HexdumpSelection;
+	private content: HTMLDivElement;
+	private listContent: any;
 	
-	constructor(containerElement, lineHeight, isBigEndian) {
+	constructor(containerElement:HTMLElement, lineHeight:number, isBigEndian:boolean) {
 		super();
 		this.container = new FlexContainer(containerElement, 'hex');
 		this.lineHeight = lineHeight;
@@ -29,8 +54,8 @@ export class Hexdump extends RadareInfiniteBlock {
 
 		this.showFlags = true;
 		this.beingSelected = false;
-		this.selectionFirst;
-		this.selectionEnd;
+	//	this.selectionFirst;
+	//	this.selectionEnd;
 
 		this.lastColorUsed = -1;
 		this.bgColors = [
@@ -63,7 +88,7 @@ export class Hexdump extends RadareInfiniteBlock {
 		r2.cmdj('ij|', (info) => { this.writable = info.core.iorw; });
 		this.selectionMode = !this.writable;
 
-		for (var key in this.colors) {
+		for (let key in this.colors) {
 			this.colors[key] = 'rgb(' + this.colors[key][0] + ',' + this.colors[key][1] + ',' + this.colors[key][2] + ')';;
 		}
 
@@ -81,19 +106,19 @@ export class Hexdump extends RadareInfiniteBlock {
 	/**
 	 * Generic definition of isWritable, if not, we are in select mode
 	 */
-	isWritable() {
+	isWritable():boolean {
 		return this.writable && !this.selectionMode;
 	}
 
 	/**
 	 * On change on R/W status on document (!= this.isWritable)
 	 */
-	changeWritable() {
-		var items = Array.prototype.slice.call(document.getElementsByClassName('writableMenu'));
-		var opacity = (this.writable) ? 1.0 : 0.5;
+	changeWritable():void {
+		const items:HTMLElement[] = Array.prototype.slice.call(document.getElementsByClassName('writableMenu'));
+		const opacity = (this.writable) ? 1.0 : 0.5;
 
-		for (var i = 0 ; i < items.length ; i++) {
-			items[i].style.opacity = opacity;
+		for (let i = 0 ; i < items.length ; i++) {
+			items[i].style.opacity = opacity+"";
 		}
 	}
 
@@ -102,7 +127,7 @@ export class Hexdump extends RadareInfiniteBlock {
 	 * Reset the container and draw the previous state
 	 * TODO: save DOM/Events when quitting widget to reload it faster
 	 */
-	resetContainer(container) {
+	resetContainer(container:HTMLElement):void {
 		this.refreshInitialOffset();
 
 		if (typeof this.nav !== 'undefined') {
@@ -123,7 +148,7 @@ export class Hexdump extends RadareInfiniteBlock {
 		this.defineInfiniteParams();
 	}
 
-	getCurrentSelection() {
+	getCurrentSelection():HexdumpSelection {
 		return this.currentSelection;
 	}
 
@@ -133,7 +158,7 @@ export class Hexdump extends RadareInfiniteBlock {
 	defineInfiniteParams() {
 		RadareInfiniteBlock.prototype.defineInfiniteParams.call(this);
 		this.nav = new HexPairNavigator(this.howManyLines, this.nbColumns, this.initialOffset);
-		this.nav.updateModifications();
+		(this.nav as HexPairNavigator).updateModifications();
 	}
 
 	/**
@@ -149,27 +174,28 @@ export class Hexdump extends RadareInfiniteBlock {
 	/**
 	 * Colorize a byte depending on 00/7f/ff and ASCII
 	 */
-	colorizeByte(elem, val) {
-		if (val === '00' || val === 'ff' || val === '7f') {
-			elem.style.color = this.colors['b0x' + val];
-		} else if (isAsciiVisible(parseInt(val, 16))) {
-			elem.style.color = 'rgb(192,192,192)';
+	colorizeByte(pElement:HTMLElement, pValue:string):void {
+		if (pValue === '00' || pValue === 'ff' || pValue === '7f') {
+			pElement.style.color = this.colors['b0x' + pValue];
+		} else if (Utils.isAsciiVisible(parseInt(pValue, 16))) {
+			pElement.style.color = 'rgb(192,192,192)';
 		} else {
-			elem.style.color = 'inherit';
+			pElement.style.color = 'inherit';
 		}
 	}
 
 	/**
 	 * Return a color on a cyclic way
 	 */
-	pickColor() {
+	pickColor():string {
 		return 'inherit'; // no random anoying colors
+
 		this.lastColorUsed = (this.lastColorUsed + 1) % this.bgColors.length;
 		return this.bgColors[this.lastColorUsed];
 	}
 
 	/** Assemble two pairs depending of endianness */
-	honoringEndian(x, y) {
+	honoringEndian(x:number, y:number) :number {
 		if (this.bigEndian) {
 			return x + y
 		} else {
@@ -180,40 +206,40 @@ export class Hexdump extends RadareInfiniteBlock {
 	/**
 	 * Convert a pair to a word considering endian
 	 */
-	pairs2words(list, wordLength) {
-		if (wordLength === 1) {
-			return list;
+	pairs2words(pList:number[], pWordLength:number):number[]{
+		if (pWordLength === 1) {
+			return pList;
 		}
 
-		let newList = [];
-		for (let i = 0 ; i < list.length / 2 ; i++) {
+		let newList:number[] = [];
+		for (let i = 0 ; i < pList.length / 2 ; i++) {
 			newList.push(
 				this.honoringEndian(
-					list[i * 2],
-					list[(i * 2) + 1]
+					pList[i * 2],
+					pList[(i * 2) + 1]
 				)
 			);
 		}
 
-		return this.pairs2words(newList, wordLength / 2);
+		return this.pairs2words(newList, pWordLength / 2);
 	}
 
 	/**
 	 * Delete selection marks from the UI
 	 */
-	cleanSelection(previsualization) {
-		if (typeof previsualization === 'undefined') {
-			previsualization = false;
+	cleanSelection(pPrevisualization = false):void {
+		if (typeof pPrevisualization === 'undefined') {
+			pPrevisualization = false;
 		}
 
-		if (!previsualization) {
+		if (!pPrevisualization) {
 			this.currentSelection = {};
 		}
 
-		var elems;
+		let elems:HTMLElement[];
 		do {
 			elems = this.listContent.getElementsByClassName('selected');
-			for (var i = 0 ; i < elems.length ; i++) {
+			for (let i = 0 ; i < elems.length ; i++) {
 				elems[i].classList.remove('selected');
 			}
 		} while (elems.length > 0);
@@ -223,7 +249,7 @@ export class Hexdump extends RadareInfiniteBlock {
 	 * Draw the selection (emulated)
 	 * Based on sibling
 	 */
-	processSelection(isPrev) {
+	processSelection(isPrev:boolean) {
 		if (isPrev) {
 			this.cleanSelection(true);
 		}
@@ -236,16 +262,16 @@ export class Hexdump extends RadareInfiniteBlock {
 			};
 		}
 
-		var start = (this.selectionFirst.offset < this.selectionEnd.offset) ? this.selectionFirst : this.selectionEnd;
-		var end = (this.selectionFirst.offset < this.selectionEnd.offset) ? this.selectionEnd : this.selectionFirst;
+		const start:Element = (this.selectionFirst.offset < this.selectionEnd.offset) ? this.selectionFirst : this.selectionEnd;
+		const end:Element= (this.selectionFirst.offset < this.selectionEnd.offset) ? this.selectionEnd : this.selectionFirst;
 
 		this.currentSelection = {
 			from: start.offset,
 			to: end.offset
 		};
 
-		var curNode = start;
-		var endFound = false;
+		let curNode = start;
+		let endFound = false;
 		while (!endFound) {
 			var sibling = curNode;
 			curNode.classList.add('selected');
@@ -265,7 +291,7 @@ export class Hexdump extends RadareInfiniteBlock {
 				curNode.classList.add('selected');
 			}
 
-			var nextLine = curNode.parentNode.parentNode.nextSibling;
+			let nextLine:ChildNode = curNode.parentNode.parentNode.nextSibling;
 			if (nextLine === null) {
 				return;
 			}
@@ -285,7 +311,7 @@ export class Hexdump extends RadareInfiniteBlock {
 /**
 	 * Draw 3 chunks on specified DOM node
 	 */
-	drawContent(dom, callback) {
+	drawContent(dom:HTMLElement, callback:any) {
 		dom.innerHTML = '';
 
 		this.listContent = document.createElement('ul');
@@ -591,18 +617,18 @@ export class Hexdump extends RadareInfiniteBlock {
 			// If it's a small modification, we update content
 			if (checkModification !== null) {
 				pairs[x] = checkModification;
-				chars[x] = hexPairToASCII(checkModification);
+				chars[x] = Utils.hexPairToASCII(checkModification);
 				isModified = true;
 			}
 
-			var hexpairEl = document.createElement('li');
+			const hexpairEl:any = document.createElement('li');
 			hexpairEl.appendChild(document.createTextNode(pairs[x]));
 			hexpairEl.offset = curOffset;
 			if (isModified) {
 				hexpairEl.classList.add('modified');
 			}
 
-			var asciiEl = document.createElement('li');
+			const asciiEl:any = document.createElement('li');
 			asciiEl.appendChild(document.createTextNode(chars[x]));
 			if (isModified) {
 				asciiEl.classList.add('modified');
@@ -617,11 +643,11 @@ export class Hexdump extends RadareInfiniteBlock {
 			this.colorizeByte(hexpairEl, pairs[x]);
 			this.colorizeByte(asciiEl, pairs[x]);
 
-			hexpairEl.addEventListener('mouseenter', (evt) => this.showPairs_(evt.target, evt.target.assoc, true));
-			hexpairEl.addEventListener('mouseleave', (evt) => this.showPairs_(evt.target, evt.target.assoc, false));
+			hexpairEl.addEventListener('mouseenter', (evt:MouseEvent) => this.showPairs_(evt.target, evt.target.assoc, true));
+			hexpairEl.addEventListener('mouseleave', (evt:MouseEvent) => this.showPairs_(evt.target, evt.target.assoc, false));
 
-			asciiEl.addEventListener('mouseenter', (evt) => this.showPairs_(evt.target, evt.target.assoc, true));
-			asciiEl.addEventListener('mouseleave', (evt) => this.showPairs_(evt.target, evt.target.assoc, false));
+			asciiEl.addEventListener('mouseenter', (evt:MouseEvent) => this.showPairs_(evt.target, evt.target.assoc, true));
+			asciiEl.addEventListener('mouseleave', (evt:MouseEvent) => this.showPairs_(evt.target, evt.target.assoc, false));
 
 			if (this.isWritable()) {
 				hexpairEl.addEventListener('click', (evt) => {
@@ -629,7 +655,7 @@ export class Hexdump extends RadareInfiniteBlock {
 						return;
 					}
 					evt.preventDefault();
-					var form = document.createElement('input');
+					const form:HTMLInputElement = document.createElement('input');
 					form.maxLength = 2;
 					form.initValue = evt.target.innerHTML;
 					form.value = evt.target.innerHTML;
@@ -642,12 +668,12 @@ export class Hexdump extends RadareInfiniteBlock {
 					form.focus();
 				});
 
-				asciiEl.addEventListener('click', (evt) => {
+				asciiEl.addEventListener('click', (evt:MouseEvent) => {
 					if (evt.button !== 0) {
 						return;
 					}
 					evt.preventDefault();
-					var form = document.createElement('input');
+					const form:HTMLInputElement = document.createElement('input');
 					form.maxLength = 1;
 					form.value = evt.target.innerHTML;
 					form.pattern = '(.){1}';
@@ -668,7 +694,7 @@ export class Hexdump extends RadareInfiniteBlock {
 					window.removeEventListener('mouseup', stopSelection);
 				};
 
-				hexpairEl.addEventListener('mousedown', (evt) => {
+				hexpairEl.addEventListener('mousedown', (evt:MouseEvent) => {
 					if (evt.button !== 0) {
 						return;
 					}
@@ -678,7 +704,7 @@ export class Hexdump extends RadareInfiniteBlock {
 					window.addEventListener('mouseup', stopSelection);
 				});
 
-				hexpairEl.addEventListener('mouseover', (evt) => {
+				hexpairEl.addEventListener('mouseover', (evt:MouseEvent) => {
 					if (!this.beingSelected) {
 						return;
 					}
@@ -686,7 +712,7 @@ export class Hexdump extends RadareInfiniteBlock {
 					this.processSelection(true);
 				});
 
-				hexpairEl.addEventListener('mouseup', (evt) => {
+				hexpairEl.addEventListener('mouseup', (evt:MouseEvent) => {
 					if (!this.beingSelected) {
 						return;
 					}
@@ -1170,12 +1196,13 @@ export class Hexdump extends RadareInfiniteBlock {
 			return;
 		}
 
-		for (var i in flags) {
-			var line;
-			var flag = flags[i];
+		let line, flag;
+
+		for (let i in flags) {
+			flag = flags[i];
 
 			// We select the first line concerned by the flag
-			for (var j = 0 ; j < lines.length ; j++) {
+			for (let j = 0 ; j < lines.length ; j++) {
 				if (lines[j].offset.start <= flag.offset &&
 					lines[j].offset.end >= flag.offset) {
 					line = lines[j];
@@ -1188,8 +1215,8 @@ export class Hexdump extends RadareInfiniteBlock {
 				continue;
 			}
 
-			const flagLine = document.createElement('li');
-			const theOffset = int2fixedHex(flag.offset, 8);
+			const flagLine:HTMLLIElement = document.createElement('li');
+			const theOffset = Utils.int2fixedHex(flag.offset, 8);
 			flagLine.classList.add('block' + blockInitialOffset);
 			flagLine.classList.add('flag');
 			flagLine.offset = theOffset;
@@ -1225,13 +1252,17 @@ export class Hexdump extends RadareInfiniteBlock {
 	 * Small flags are "painted" at the end to ensure
 	 * better visibility (not masked by wide flags).
 	 */
-	colorizeFlag(reset) {
+	colorizeFlag(pReset = false) {
 		if (!this.showFlags) {
 			return;
 		}
 
-		if (typeof reset === 'undefined') {
+		let reset:boolean;
+
+		if (typeof pReset === 'undefined') {
 			reset = false;
+		}else{
+			reset = pReset;
 		}
 
 		var list = [].slice.call(this.listContent.children);

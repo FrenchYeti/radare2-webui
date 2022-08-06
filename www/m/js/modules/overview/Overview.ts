@@ -5,8 +5,16 @@ import {GraphCard} from './GraphCard';
 import {InfoCard} from './InfoCard';
 
 export class Overview {
+	private analysisCard: any;
+	private entropyCard: any;
+	private fortuneCard: any;
+	private graphCard: any;
+	private infoCard: any;
+	private dom: any;
 
-	get DOM() { return this.dom; }
+	get DOM() {
+		return this.dom;
+	}
 
 	constructor() {
 		this.analysisCard = new AnalysisCard();

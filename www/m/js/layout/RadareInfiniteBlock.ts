@@ -1,6 +1,7 @@
 import {NavigatorDirection} from '../core/NavigatorDirection';
 import {InfiniteScrolling} from '../helpers/InfiniteScrolling';
 import {r2} from "../../../lib/r2";
+import {BlockNavigator} from "../core/BlockNavigator";
 
 /**  How many screen we want to retrieve in one round-trip with r2 */
 export const defaultHeightProvisioning = 3;
@@ -15,7 +16,7 @@ export class RadareInfiniteBlock {
 	container:any;
 	lineHeight:number;
 	infiniteDrawingContent: any;
-	nav:any;
+	nav: BlockNavigator;
 
 
 	constructor(heightProvisioning = defaultHeightProvisioning) {
