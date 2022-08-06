@@ -28,10 +28,10 @@ export class FunctionsWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c:HTMLDivElement = document.createElement('div');
 
-		var header = document.createElement('div');
+		const header:HTMLDivElement = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
@@ -76,21 +76,21 @@ export class FunctionsWidget extends BaseWidget {
 			});
 		}));
 
-		var content = document.createElement('div');
+		const content:HTMLDivElement = document.createElement('div');
 		content.style.paddingTop = '70px';
 		c.appendChild(content);
 
 		r2.cmd('afl', function(d) {
-			var table = new Table(
+			const table = new Table(
 				['+Address', 'Name', 'Size', 'CC'],
 				[false, true, false, false],
 				'functionTable',
 				null,
 				Widgets.DISASSEMBLY);
 
-			var lines = d.split(/\n/); //clickable offsets (d).split (/\n/);
+			const lines = d.split(/\n/); //clickable offsets (d).split (/\n/);
 			for (var i in lines) {
-				var items = lines[i].match(/^(0x[0-9a-f]+)\s+([0-9]+)\s+([0-9]+(\s+\-&gt;\s+[0-9]+)?)\s+(.+)$/);
+				const items = lines[i].match(/^(0x[0-9a-f]+)\s+([0-9]+)\s+([0-9]+(\s+\-&gt;\s+[0-9]+)?)\s+(.+)$/);
 				if (items !== null) {
 					table.addRow([items[1], items[5], items[2], items[3]]);
 				}

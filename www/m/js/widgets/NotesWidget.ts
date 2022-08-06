@@ -22,17 +22,17 @@ export class NotesWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c:HTMLDivElement = document.createElement('div');
 
-		var header = document.createElement('div');
+		const header:HTMLDivElement = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
 
 		header.appendChild(Inputs.iconButton('undo', 'Back to Comments', () => uiContext.navigateTo(Widgets.COMMENTS)));
 
-		var content = document.createElement('div');
+		const content:HTMLDivElement = document.createElement('div');
 		content.style.paddingTop = '70px';
 		content.innerHTML = '<textarea rows=32 style="width:100%;height:100%"></textarea>';
 		c.appendChild(content);

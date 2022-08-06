@@ -26,13 +26,13 @@ export class FlagsWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 	
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c:HTMLDivElement = document.createElement('div');
 		if (this.inColor) {
 			c.style.backgroundColor = '#202020';
 		}
 
-		var header = document.createElement('div');
+		const header:HTMLDivElement = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
@@ -41,7 +41,7 @@ export class FlagsWidget extends BaseWidget {
 		header.appendChild(Inputs.button('Spaces', () => uiContext.navigateTo(Widgets.FLAGS_SPACE)));
 		header.appendChild(Inputs.button('Delete All', () => r2.cmd('f-*', () => this.draw())));
 
-		var content = document.createElement('div');
+		const content:HTMLDivElement = document.createElement('div');
 		content.style.paddingTop = '50px';
 		c.appendChild(content);
 

@@ -3,6 +3,9 @@ import {Hexdump} from '../modules/hexdump/Hexdump';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 
 export class HexdumpWidget extends BaseWidget {
+
+	private firstTime: boolean;
+
 	constructor() {
 		super('Hexdump', 'dark');
 	}

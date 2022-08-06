@@ -4,6 +4,8 @@ import {formatOffsets} from '../helpers/Format';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 
 export class DebuggerWidget extends BaseWidget {
+	private nativeDebugger: boolean;
+
 	constructor() {
 		super('Debugger', 'dark');
 	}
@@ -29,13 +31,13 @@ export class DebuggerWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c = document.createElement('div');
 		if (this.inColor) {
 			c.style.backgroundColor = '#202020';
 		}
 
-		var header = document.createElement('div');
+		const header = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
@@ -48,7 +50,7 @@ export class DebuggerWidget extends BaseWidget {
 		header.appendChild(Inputs.button('Cont', () => r2.cmd(this.nativeDebugger ? 'dc' : 'aec', () => this.draw())));
 		header.appendChild(Inputs.button('BP', () => r2.cmd('db $$', () => this.draw())));
 		header.appendChild(Inputs.button('REG', () => {
-			var expr = prompt('register=value');
+			const expr = prompt('register=value');
 			if (this.nativeDebugger) {
 				r2.cmd('dr ' + expr + ';.dr*', () => this.draw());
 			} else {
@@ -56,7 +58,7 @@ export class DebuggerWidget extends BaseWidget {
 			}
 		}));
 
-		var content = document.createElement('div');
+		const content = document.createElement('div');
 		content.style.paddingTop = '50px';
 		c.appendChild(content);
 

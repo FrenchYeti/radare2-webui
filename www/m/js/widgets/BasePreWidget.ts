@@ -7,6 +7,9 @@ import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
  * Would be eventually formatted then encapsulated with <pre> 
  */
 export class BasePreWidget extends BaseWidget {
+	private formatFunc: any;
+	private r2cmd: string;
+	private backButton: any;
 
 	/**
 	 * Creates an instance of BasePreWidget.
@@ -15,7 +18,7 @@ export class BasePreWidget extends BaseWidget {
 	 * @param {any} r2cmd Command executed to obtain the output
 	 * @param {any} [backButton=null] Optional button to be inserted into the widget
 	 */
-	constructor(name, formatFunc, r2cmd, backButton = null) {
+	constructor(name:string, formatFunc:any, r2cmd:string, backButton:any = null) {
 		super(name, 'dark');
 		this.formatFunc = formatFunc;
 		this.r2cmd = r2cmd;

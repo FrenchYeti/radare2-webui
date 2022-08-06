@@ -28,16 +28,16 @@ export class CommentsWidget extends BaseWidget {
 	}
 
 	getPanel() {
-		var c = document.createElement('div');
+		const c:HTMLDivElement= document.createElement('div');
 
-		var header = document.createElement('div');
+		let header = document.createElement('div');
 		header.style.position = 'fixed';
 		header.style.margin = '0.5em';
 		c.appendChild(header);
 
 		header.appendChild(Inputs.button('Notes', () => uiContext.navigateTo(Widgets.NOTES)));
 
-		var content = document.createElement('div');
+		let content = document.createElement('div');
 		content.style.paddingTop = '70px';
 		c.appendChild(content);
 
@@ -59,9 +59,10 @@ export class CommentsWidget extends BaseWidget {
 				},
 				Widgets.HEXDUMP);
 
-			var lines = d.split(/\n/); //clickable offsets (d).split (/\n/);
-			for (var i in lines) {
-				var line = lines[i].split(/ (.+)?/);
+			let lines:string[] = d.split(/\n/); //clickable offsets (d).split (/\n/);
+			let line:string[];
+			for (const i in lines) {
+				line = lines[i].split(/ (.+)?/);
 				if (line.length >= 2) {
 					table.addRow([line[0], line[1]]);
 				}

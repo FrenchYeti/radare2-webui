@@ -7,6 +7,7 @@ import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
  * @extends {BaseWidget}
  */
 export class OverviewWidget extends BaseWidget {
+	private overview: any;
 
 	/** Creates an instance of OverviewWidget */
 	constructor() {

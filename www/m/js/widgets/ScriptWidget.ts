@@ -6,6 +6,8 @@ import {Inputs} from '../helpers/Inputs';
 import {r2Wrapper, R2Actions} from '../core/R2Wrapper';
 
 export class ScriptWidget extends BaseWidget {
+	private toggleFoo: string;
+
 	constructor() {
 		super('Script');
 	}
@@ -23,8 +25,8 @@ export class ScriptWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c:HTMLDivElement = document.createElement('div');
 
 		c.appendChild(Inputs.button('Run', () => this.runScript()));
 		c.appendChild(Inputs.button('Indent', () => this.indentScript()));
@@ -33,7 +35,7 @@ export class ScriptWidget extends BaseWidget {
 
 		c.appendChild(document.createElement('br'));
 
-		const textarea = document.createElement('textarea');
+		const textarea:HTMLTextAreaElement = document.createElement('textarea');
 		textarea.id = 'script';
 		textarea.rows = 20;
 		textarea.className = 'pre';
@@ -42,7 +44,7 @@ export class ScriptWidget extends BaseWidget {
 
 		c.appendChild(document.createElement('br'));
 
-		const output = document.createElement('div');
+		const output:HTMLDivElement = document.createElement('div');
 		output.id = 'scriptOutput';
 		output.className = 'output';
 		c.appendChild(output);
@@ -57,7 +59,7 @@ export class ScriptWidget extends BaseWidget {
 	}
 
 	toggleScriptOutput() {
-		var o = document.getElementById('scriptOutput');
+		const o = document.getElementById('scriptOutput');
 		if (o) {
 			if (this.toggleFoo === '') {
 				this.toggleFoo = o.innerHTML;
@@ -70,14 +72,16 @@ export class ScriptWidget extends BaseWidget {
 	}
 
 	indentScript() {
-		var str = document.getElementById('script').value;
-		var indented = /* NOT DEFINED js_beautify*/ (str);
-		document.getElementById('script').value = indented;
+		const el:any = document.getElementById('script');
+		const str = el.value;
+		const indented = /* NOT DEFINED js_beautify*/ (str);
+		el.value = indented;
 		localStorage.script = indented;
 	}
 
 	runScript() {
-		var str = document.getElementById('script').value;
+		const el:any = document.getElementById('script');
+		const str = el.value;
 		localStorage.script = str;
 		document.getElementById('scriptOutput').innerHTML = '';
 		try {

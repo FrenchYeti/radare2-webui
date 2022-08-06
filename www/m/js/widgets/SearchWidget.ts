@@ -20,10 +20,10 @@ export class SearchWidget extends BaseWidget {
 		this.node.appendChild(this.getPanel());
 	}
 
-	getPanel() {
-		var c = document.createElement('div');
+	getPanel():HTMLDivElement {
+		const c:HTMLDivElement = document.createElement('div');
 
-		var header = document.createElement('div');
+		const header = document.createElement('div');
 		header.style.margin = '0.5em';
 		c.appendChild(header);
 
@@ -59,7 +59,7 @@ export class SearchWidget extends BaseWidget {
 	}
 
 	searchKey(keyCode) {
-		var inp = document.getElementById('search_input');
+		const inp:HTMLInputElement = document.getElementById('search_input') as HTMLInputElement;
 		if (keyCode === 13) {
 			this.runSearch(inp.value);
 			inp.value = '';
@@ -73,47 +73,47 @@ export class SearchWidget extends BaseWidget {
 		});
 	}
 
-	runSearchCode(text) {
-		if (!text) {
-			text = document.getElementById('search_input').value;
+	runSearchCode(pPattern:string = null) {
+		if (!pPattern) {
+			pPattern = (document.getElementById('search_input') as HTMLInputElement).value;
 		}
-		r2.cmd('"/c ' + text + '"', function (d) {
+		r2.cmd('"/c ' + pPattern + '"', function (d) {
 			const node = document.getElementById('search_output');
 			node.appendChild(formatOffsets(d));
 		});
 	}
 
-	runSearchString(text) {
-		if (!text) {
-			text = document.getElementById('search_input').value;
+	runSearchString(pPattern:string = null) {
+		if (!pPattern) {
+			pPattern = (document.getElementById('search_input') as HTMLInputElement).value;
 		}
-		r2.cmd('/ ' + text, function (d) {
+		r2.cmd('/ ' + pPattern, function (d) {
 			const node = document.getElementById('search_output');
 			node.appendChild(formatOffsets(d));
 		});
 	}
 
-	runSearchROP(text) {
-		if (!text) {
-			text = document.getElementById('search_input').value;
+	runSearchROP(pPattern:string = null) {
+		if (!pPattern) {
+			pPattern = (document.getElementById('search_input') as HTMLInputElement).value;
 		}
-		r2.cmd('"/R ' + text + '"', function (d) {
+		r2.cmd('"/R ' + pPattern + '"', function (d) {
 			const node = document.getElementById('search_output');
 			node.appendChild(formatOffsets(d));
 		});
 	}
 
-	runSearch(text) {
-		if (!text) {
-			text = document.getElementById('search_input').value;
+	runSearch(pPattern:string = null) {
+		if (!pPattern) {
+			pPattern = (document.getElementById('search_input') as HTMLInputElement).value;
 		}
-		if (text[0] === '"') {
-			r2.cmd('"/ ' + text + '"', function (d) {
+		if (pPattern[0] === '"') {
+			r2.cmd('"/ ' + pPattern + '"', function (d) {
 				const node = document.getElementById('search_output');
 				node.appendChild(formatOffsets(d));
 			});
 		} else {
-			r2.cmd('"/x ' + text + '"', function (d) {
+			r2.cmd('"/x ' + pPattern + '"', function (d) {
 				const node = document.getElementById('search_output');
 				node.appendChild(formatOffsets(d));
 			});
